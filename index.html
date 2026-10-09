@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Harmônico </title>
+
+    <!-- Fonte Inter para tipografia de produto refinada -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 (Utilizado apenas para o grid base/utilitários) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           SISTEMA DE DESIGN & VARIÁVEIS
+           ========================================================================== */
+        :root {
+            /* Paleta do Sistema: Ambar Harmônico + Neutros Profundos */
+            --bg-body: #0F1115;
+            --surface-card: #161920;
+            --surface-border: #262A34;
+            --surface-hover: #1E222B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+
+            --brand-primary: #D97706;   /* Laranja Ambar Profundo */
+            --brand-hover: #B45309;
+            --brand-focus: rgba(217, 119, 6, 0.25);
+            
+            --state-error: #EF4444;
+            --state-error-bg: rgba(239, 68, 68, 0.08);
+
+            --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+            --transition-smooth: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Reset & Estrutura Base */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Layout em Duas Áreas Assimétricas (Painel do Produto) */
+        .auth-container {
+            width: 100%;
+            max-width: 960px;
+            min-height: 580px;
+            margin: 1.5rem;
+            background-color: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* PAINEL ESQUERDO: Marca & Contexto do Sistema */
+        .brand-panel {
+            background-color: #12141A;
+            border-right: 1px solid var(--surface-border);
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Logo Vetorial Minimalista (3 Barras de Frequência/Escala Harmônica) */
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .brand-logo-img {
+            height: 52px; /* Ajuste a altura ideal para a sua imagem */
+            width: auto;  /* Mantém a proporção original */
+            object-fit: contain;
+        }
+
+        .brand-logo-icon {
+            width: 28px;
+            height: 28px;
+            color: var(--brand-primary);
+        }
+
+        .brand-logo-text {
+            font-weight: 700;
+            font-size: 1.125rem;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        .brand-manifesto h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.35;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .brand-manifesto p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .brand-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* PAINEL DIREITO: Formulário de Autenticação */
+        .form-panel {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.35rem 0;
+            letter-spacing: -0.01em;
+        }
+
+        .form-header p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Componentes de Formulário */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            height: 44px;
+            background-color: var(--bg-body);
+            border: 1px solid var(--surface-border);
+            border-radius: 6px;
+            padding: 0 0.875rem;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            transition: var(--transition-smooth);
+            outline: none;
+        }
+
+        .form-control-custom::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-control-custom:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px var(--brand-focus);
+        }
+
+        /* Botão Principal */
+        .btn-submit {
+            width: 100%;
+            height: 44px;
+            background-color: var(--brand-primary);
+            color: #FFFFFF;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--brand-hover);
+        }
+
+        .btn-submit:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--brand-focus);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Mensagens de Feedback */
+        .feedback-message {
+            margin-top: 1rem;
+            font-size: 0.8125rem;
+            line-height: 1.4;
+            min-height: 20px;
+        }
+
+        .feedback-message.error {
+            color: var(--state-error);
+            background-color: var(--state-error-bg);
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* RESPONSIVIDADE (Mobile-First Optimization) */
+        /* RESPONSIVIDADE (Mobile-First Optimization) */
+        @media (max-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+                min-height: auto;
+                margin: 1rem;
+            }
+
+            .brand-panel {
+                padding: 1.5rem 1.75rem;
+                border-right: none;
+                border-bottom: 1px solid var(--surface-border);
+            }
+
+            /* OCULTA O MANIFESTO E A VERSÃO NO TELEMÓVEL */
+            .brand-manifesto,
+            .brand-meta {
+                display: none !important;
+            }
+
+            .form-panel {
+                padding: 2rem 1.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="auth-container" aria-labelledby="page-title">
+        
+        <!-- PAINEL DE MARCA & CONTEXTO -->
+        <section class="brand-panel">
+            <div class="brand-logo">
+                <!-- SVG Mínimo: Representação Geométrica Harmônica -->
+                <img src="assets/logo.png" alt="Guia Harmônico" class="brand-logo-img">
+                <span class="brand-logo-text">Guia Harmônico</span>
+            </div>
+
+            <div class="brand-manifesto">
+                <h2>Ambiente de Ensino Musical</h2>
+                <p>Acompanhamento do repertório musical e desenvolvimento dos estudos em teoria musical.</p>
+            </div>
+
+            <div class="brand-meta">
+                <span>Versão 1.0</span>
+            </div>
+        </section>
+
+        <!-- PAINEL DE AUTENTICAÇÃO -->
+        <section class="form-panel">
+            <div class="form-header">
+                <h1 id="page-title">Acessar a conta</h1>
+                <p>Coloque seu nome de usuário e senha para continuar</p>
+            </div>
+
+            <form id="loginForm" novalidate>
+                
+                <div class="form-group">
+                    <label for="login" class="form-label">Nome de Usuário</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            class="form-control-custom"
+                            id="login"
+                            placeholder="ex: joaosilva"
+                            autocomplete="username"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha" class="form-label">Senha de Acesso</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            class="form-control-custom"
+                            id="senha"
+                            placeholder="••••••••"
+                            autocomplete="current-password"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <span>Entrar</span>
+                </button>
+
+                <!-- Área reservada para mensagens de erro/carregamento sem salto de layout -->
+                <div id="mensagem" class="feedback-message" aria-live="polite"></div>
+
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Script de Integração Existente (Inalterado) -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>

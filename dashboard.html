@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Harmônico — Área do Aluno</title>
+
+    <!-- Tipografia Profissional Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 (Grid e Utilitários) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           SISTEMA DE DESIGN & VARIÁVEIS (PADRÃO GUIA HARMÔNICO)
+           ========================================================================== */
+        :root {
+            --bg-body: #0F1115;
+            --surface-card: #161920;
+            --surface-border: #262A34;
+            --surface-hover: #1E222B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+
+            --brand-primary: #D97706;
+            --brand-hover: #B45309;
+            --brand-focus: rgba(217, 119, 6, 0.20);
+            --brand-surface: rgba(217, 119, 6, 0.08);
+
+            --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+            --transition-smooth: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        #tarefasAlunoProfessor p,
+        #anotacoesAlunoProfessor p,
+        #repertorioAlunoProfessor p {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+            white-space: pre-wrap;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER & NAVEGAÇÃO */
+        .app-header {
+            background-color: var(--surface-card);
+            border-bottom: 1px solid var(--surface-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.6rem 0;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .brand-logo-img {
+            height: 32px; /* Ajuste a altura ideal para a sua imagem */
+            width: auto;  /* Mantém a proporção original */
+            object-fit: contain;
+        }
+
+        .brand-logo-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--brand-primary);
+        }
+
+        .brand-logo-text {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .user-pill {
+            background-color: var(--bg-body);
+            border: 1px solid var(--surface-border);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-avatar {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--brand-primary);
+        }
+
+        .btn-logout {
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            padding: 0.35rem 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-logout:hover {
+            color: #EF4444;
+        }
+
+        /* HERO PANEL DE BOAS-VINDAS */
+        .hero-panel {
+            background-color: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background-color: var(--brand-primary);
+        }
+
+        .hero-tag {
+            font-size: 0.75rem;
+            font-family: monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--brand-primary);
+            margin-bottom: 0.35rem;
+            display: block;
+        }
+
+        .hero-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        /* CONTADORES RÁPIDOS */
+        .counter-badge {
+            background-color: var(--brand-surface);
+            color: var(--brand-primary);
+            border: 1px solid rgba(217, 119, 6, 0.3);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            margin-left: 6px;
+        }
+
+        /* NAVEGAÇÃO DE ABAS */
+        .tabs-navigation {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--surface-border);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .tabs-navigation::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+            background-color: var(--surface-hover);
+        }
+
+        .tab-button.active {
+            color: var(--brand-primary);
+            background-color: var(--surface-card);
+        }
+
+        .tab-button.active::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--brand-primary);
+        }
+
+        /* CONTAINER DE CONTEÚDO DA ABA */
+        .tab-content {
+            display: none;
+            background-color: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            min-height: 300px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ESTILIZAÇÃO DOS CARDS DO SCRIPT.JS */
+        article.tarefa,
+        article.anotacao,
+        .tab-content article {
+            background-color: var(--bg-body);
+            border: 1px solid var(--surface-border);
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.4rem 0;
+        }
+
+        .tab-content p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin: 0 0 0.4rem 0;
+        }
+
+        .tab-content small {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* BOTÕES E LINKS OBRIGATÓRIOS DO SCRIPT EM LARANJA DESTACADO */
+        .tab-content button,
+        .tab-content a,
+        #listaRepertorio a {
+            background-color: var(--brand-surface) !important;
+            color: var(--brand-primary) !important;
+            border: 1px solid rgba(217, 119, 6, 0.4) !important;
+            padding: 0.45rem 0.9rem;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 0.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-content button:hover,
+        .tab-content a:hover,
+        #listaRepertorio a:hover {
+            background-color: var(--brand-primary) !important;
+            color: #FFFFFF !important;
+            border-color: var(--brand-primary) !important;
+        }
+
+        /* ESTILOS DO DICIONÁRIO DE ACORDES */
+        .dicionario-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            background-color: var(--bg-body);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--surface-border);
+            align-items: center;
+        }
+
+        .dicionario-search {
+            flex: 1;
+            min-width: 220px;
+            background-color: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            padding: 0.55rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .dicionario-search:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .instrumento-toggle {
+            display: flex;
+            background-color: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            border-radius: 6px;
+            padding: 0px 5px 5px 5px;
+        }
+
+        .btn-instrumento {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.9rem;
+            margin: 5px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-instrumento.active {
+            background-color: var(--brand-primary);
+            color: #FFFFFF;
+        }
+
+        .chords-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .chord-card {
+            background-color: var(--bg-body);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: var(--transition-smooth);
+        }
+
+        .chord-card:hover {
+            border-color: var(--brand-primary);
+            transform: translateY(-2px);
+        }
+
+        .chord-header {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 0.75rem;
+        }
+
+        .chord-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--brand-primary);
+        }
+
+        .chord-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .chord-svg-box {
+            width: 100%;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--surface-card);
+            border-radius: 6px;
+            border: 1px solid var(--surface-border);
+            padding: 0.5rem;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .spinner-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--surface-border);
+            border-top-color: var(--brand-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            margin-top: auto;
+            border-top: 1px solid var(--surface-border);
+            padding: 1.5rem 0;
+            background-color: var(--surface-card);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================================================
+           NAVEGAÇÃO INFERIOR EXCLUSIVA PARA CELULAR (MOBILE BOTTOM NAV)
+           ========================================================================== */
+        .mobile-bottom-nav {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .tabs-navigation .tab-button[onclick*="aba-repertorio"],
+            .tabs-navigation .tab-button[onclick*="aba-dicionario"] {
+                display: none !important;
+            }
+
+            body {
+                padding-bottom: 70px;
+            }
+
+            .mobile-bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 64px;
+                background-color: var(--surface-card);
+                border-top: 1px solid var(--surface-border);
+                z-index: 1050;
+                justify-content: space-around;
+                align-items: center;
+                padding: 0 0.5rem;
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4);
+            }
+
+            .mobile-nav-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border: none;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                font-weight: 500;
+                padding: 6px 0;
+                cursor: pointer;
+                transition: var(--transition-smooth);
+                text-decoration: none;
+                gap: 3px;
+            }
+
+            .mobile-nav-item svg {
+                width: 22px;
+                height: 22px;
+                fill: currentColor;
+            }
+
+            .mobile-nav-item:hover,
+            .mobile-nav-item.active {
+                color: var(--brand-primary);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CABEÇALHO / NAVEGAÇÃO -->
+    <header class="app-header">
+        <div class="container d-flex align-items-center justify-content-between py-2.5">
+            
+                <a class="brand-logo" href="dashboard.html">
+                    <img src="assets/logo.png" alt="Guia Harmônico" class="brand-logo-img">
+                    <span class="brand-logo-text">Guia Harmônico</span>
+                </a>
+            
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="user-pill">
+                    <span class="user-avatar"></span>
+                    <span id="nomeUsuario">Carregando...</span>
+                </div>
+                <button id="botaoSair" class="btn-logout">
+                    Sair
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="container my-4">
+
+        <!-- BOAS-VINDAS / PERFIL DO ALUNO -->
+        <section class="hero-panel">
+            <span class="hero-tag">Área do Aluno</span>
+            <h1 class="hero-title">Olá, <span id="nomeAluno">Aluno</span>!</h1>
+            <p class="hero-subtitle">Tarefas, anotações, repertório de musicas e dicionário de acordes.</p>
+        </section>
+
+        <!-- NAVEGAÇÃO DE ABAS -->
+        <nav class="tabs-navigation" role="tablist">
+            <button class="tab-button active" onclick="alternarAba('aba-tarefas', this)" role="tab">
+                Tarefas <span class="counter-badge" id="quantidadeTarefas">0</span>
+            </button>
+            <button class="tab-button" onclick="alternarAba('aba-anotacoes', this)" role="tab">
+                Anotações <span class="counter-badge" id="quantidadeAnotacoes">0</span>
+            </button>
+            <button class="tab-button" onclick="alternarAba('aba-repertorio', this)" role="tab">
+                Repertório <span class="counter-badge" id="quantidadeRepertorio">0</span>
+            </button>
+            <button class="tab-button" onclick="alternarAba('aba-dicionario', this)" role="tab">
+                Dicionário de Acordes
+            </button>
+        </nav>
+
+        <!-- ABA 1: TAREFAS -->
+        <section id="aba-tarefas" class="tab-content active" role="tabpanel">
+            <!-- Lista de Tarefas Pendentes -->
+            <div id="listaTarefas">
+                <div class="loading-state">
+                    <span class="spinner-custom"></span> Carregando tarefas...
+                </div>
+            </div>
+
+            <!-- Seção de Tarefas Concluídas (Sanfona/Accordion) -->
+            <div class="mt-4 pt-3 border-top border-secondary-subtle">
+                <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 w-100 justify-content-between" onclick="alternarTarefasConcluidas()">
+                    <span>Atividades feitas (<span id="quantidadeTarefasConcluidas">0</span>)</span>
+                    <span id="iconeSanfona">▼</span>
+                </button>
+
+                <div id="containerTarefasConcluidas" class="mt-3" style="display: none;">
+                    <div id="listaTarefasConcluidas">
+                        <p style="color: var(--text-muted); font-size: 0.8125rem;">Nenhuma atividade concluída ainda.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 2: ANOTAÇÕES -->
+        <section id="aba-anotacoes" class="tab-content" role="tabpanel">
+            <div id="listaAnotacoes">
+                <div class="loading-state">
+                    <span class="spinner-custom"></span> Carregando anotações...
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 3: REPERTÓRIO -->
+        <section id="aba-repertorio" class="tab-content" role="tabpanel">
+            <div id="listaRepertorio">
+                <div class="loading-state">
+                    <span class="spinner-custom"></span> Carregando repertório...
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 4: DICIONÁRIO DE ACORDES -->
+        <section id="aba-dicionario" class="tab-content" role="tabpanel">
+            <div class="dicionario-controls">
+                <input type="text" id="filtroAcorde" class="dicionario-search" placeholder="Digite o acorde (ex: C, D, Am, G7, F#m)..." oninput="renderizarGradeAcordes()">
+                
+                <div class="instrumento-toggle">
+                    <button id="btnViolao" class="btn-instrumento active" onclick="mudarInstrumento('violao')">Violão / Guitarra</button>
+                    <button id="btnTeclado" class="btn-instrumento" onclick="mudarInstrumento('teclado')">Teclado / Piano</button>
+                </div>
+            </div>
+
+            <!-- COLUNAS/GRID DE ACORDES -->
+            <div id="gridAcordes" class="chords-grid">
+                <!-- Cards de acordes gerados dinamicamente sem duplicações -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR (APENAS CELULAR) -->
+    <nav class="mobile-bottom-nav">
+        <!-- Ícone Repertório: Nota Musical -->
+        <button type="button" class="mobile-nav-item" id="mobile-btn-repertorio" onclick="alternarAbaMobile('aba-repertorio', this)">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+            <span>Repertório</span>
+        </button>
+
+        <!-- Ícone Dicionário: Acorde / Grade de Teclas/Cordas -->
+        <button type="button" class="mobile-nav-item" id="mobile-btn-dicionario" onclick="alternarAbaMobile('aba-dicionario', this)">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/>
+            </svg>
+            <span>Dicionário</span>
+        </button>
+
+        <!-- Ícone Perfil: Usuário -->
+        <button type="button" class="mobile-nav-item" id="mobile-btn-perfil" onclick="rolarParaPerfilMobile(this)">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <span>Perfil</span>
+        </button>
+    </nav>
+
+    <!-- SCRIPT DE INTERAÇÕES E TRATAMENTO DA COLUNA CIFRA (CIFRA CLUB) -->
+    <script>
+        // Função para as abas superiores (Desktop / Mobile Tarefas e Anotações)
+        function alternarAba(idAba, elemento) {
+            // 1. Limpa o destaque de TODAS as abas e botões do footer
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
+
+            // 2. Ativa o conteúdo da aba selecionada
+            const abaAlvo = document.getElementById(idAba);
+            if (abaAlvo) {
+                abaAlvo.classList.add('active');
+            }
+
+            // 3. Marca apenas o botão do topo clicado como ativo
+            if (elemento) {
+                elemento.classList.add('active');
+            }
+
+            // 4. Se o botão do topo for Repertório ou Dicionário, destaca também o ícone do footer no mobile
+            if (idAba === 'aba-repertorio') {
+                const btnMob = document.getElementById('mobile-btn-repertorio');
+                if (btnMob) btnMob.classList.add('active');
+            } else if (idAba === 'aba-dicionario') {
+                const btnMob = document.getElementById('mobile-btn-dicionario');
+                if (btnMob) btnMob.classList.add('active');
+                renderizarGradeAcordes();
+            }
+        }
+
+        // Função para a barra inferior (Footer Mobile)
+        function alternarAbaMobile(idAba, elemento) {
+            // 1. Limpa o destaque de tudo
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
+
+            // 2. Ativa o conteúdo selecionado
+            const abaAlvo = document.getElementById(idAba);
+            if (abaAlvo) {
+                abaAlvo.classList.add('active');
+            }
+
+            // 3. Marca apenas o botão do footer clicado como ativo
+            if (elemento) {
+                elemento.classList.add('active');
+            }
+
+            // 4. Sincroniza ativando a aba equivalente no topo
+            const btnTopo = document.querySelector(`.tab-button[onclick*="${idAba}"]`);
+            if (btnTopo) {
+                btnTopo.classList.add('active');
+            }
+
+            if (idAba === 'aba-dicionario') {
+                renderizarGradeAcordes();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Função para o botão Perfil na nav inferior
+        function rolarParaPerfilMobile(elemento) {
+            // Limpa destaque de todas as abas e botões
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
+
+            // Marca apenas o botão Perfil
+            if (elemento) {
+                elemento.classList.add('active');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        let instrumentoAtual = 'violao';
+
+        // BASE ÚNICA E MAPEADA DE ACORDES
+        const BASE_ACORDES = [
+            { nome: 'C', tonica: 'C', tipo: 'Maior', g: [-1, 3, 2, 0, 1, 0], k: [0, 4, 7] },
+            { nome: 'Cm', tonica: 'C', tipo: 'Menor', g: [-1, 3, 5, 5, 4, 3], k: [0, 3, 7] },
+            { nome: 'C7', tonica: 'C', tipo: 'Dominante', g: [-1, 3, 2, 3, 1, 0], k: [0, 4, 7, 10] },
+            { nome: 'D', tonica: 'D', tipo: 'Maior', g: [-1, -1, 0, 2, 3, 2], k: [2, 6, 9] },
+            { nome: 'Dm', tonica: 'D', tipo: 'Menor', g: [-1, -1, 0, 2, 3, 1], k: [2, 5, 9] },
+            { nome: 'D7', tonica: 'D', tipo: 'Dominante', g: [-1, -1, 0, 2, 1, 2], k: [2, 6, 9, 0] },
+            { nome: 'E', tonica: 'E', tipo: 'Maior', g: [0, 2, 2, 1, 0, 0], k: [4, 8, 11] },
+            { nome: 'Em', tonica: 'E', tipo: 'Menor', g: [0, 2, 2, 0, 0, 0], k: [4, 7, 11] },
+            { nome: 'E7', tonica: 'E', tipo: 'Dominante', g: [0, 2, 0, 1, 0, 0], k: [4, 8, 11, 2] },
+            { nome: 'F', tonica: 'F', tipo: 'Maior', g: [1, 3, 3, 2, 1, 1], k: [5, 9, 0] },
+            { nome: 'Fm', tonica: 'F', tipo: 'Menor', g: [1, 3, 3, 1, 1, 1], k: [5, 8, 0] },
+            { nome: 'G', tonica: 'G', tipo: 'Maior', g: [3, 2, 0, 0, 0, 3], k: [7, 11, 2] },
+            { nome: 'Gm', tonica: 'G', tipo: 'Menor', g: [3, 5, 5, 3, 3, 3], k: [7, 10, 2] },
+            { nome: 'G7', tonica: 'G', tipo: 'Dominante', g: [3, 2, 0, 0, 0, 1], k: [7, 11, 2, 5] },
+            { nome: 'A', tonica: 'A', tipo: 'Maior', g: [-1, 0, 2, 2, 2, 0], k: [9, 1, 4] },
+            { nome: 'Am', tonica: 'A', tipo: 'Menor', g: [-1, 0, 2, 2, 1, 0], k: [9, 0, 4] },
+            { nome: 'A7', tonica: 'A', tipo: 'Dominante', g: [-1, 0, 2, 0, 2, 0], k: [9, 1, 4, 7] },
+            { nome: 'B', tonica: 'B', tipo: 'Maior', g: [-1, 2, 4, 4, 4, 2], k: [11, 3, 6] },
+            { nome: 'Bm', tonica: 'B', tipo: 'Menor', g: [-1, 2, 4, 4, 3, 2], k: [11, 2, 6] },
+            { nome: 'B7', tonica: 'B', tipo: 'Dominante', g: [-1, 2, 1, 2, 0, 2], k: [11, 3, 6, 9] }
+        ];
+
+        function mudarInstrumento(novoInst) {
+            instrumentoAtual = novoInst;
+            document.getElementById('btnViolao').classList.toggle('active', novoInst === 'violao');
+            document.getElementById('btnTeclado').classList.toggle('active', novoInst === 'teclado');
+            renderizarGradeAcordes();
+        }
+
+        // ORDENADOR CROMÁTICO MUSICAL
+        const ORDEM_NOTAS = { 'C': 1, 'C#': 2, 'D': 3, 'D#': 4, 'E': 5, 'F': 6, 'F#': 7, 'G': 8, 'G#': 9, 'A': 10, 'A#': 11, 'B': 12 };
+
+        async function renderizarGradeAcordes() {
+            const container = document.getElementById('gridAcordes');
+            if (!container) return;
+
+            const termo = document.getElementById('filtroAcorde').value.trim().toUpperCase();
+
+            // 1. Busca do Supabase
+            let acordesBanco = [];
+            try {
+                const { data, error } = await supabaseClient.from('acordes').select('*');
+                if (!error && data) {
+                    acordesBanco = data.map(item => ({
+                        nome: item.nome,
+                        tonica: item.tonica,
+                        tipo: item.tipo,
+                        g: item.posicao_violao,
+                        k: item.posicao_teclado
+                    }));
+                }
+            } catch (err) {
+                console.warn("Erro ao buscar acordes do banco:", err);
+            }
+
+            // 2. Unifica banco com a base padrao sem duplicar
+            const nomesBanco = acordesBanco.map(a => a.nome.toUpperCase());
+            const baseFiltrada = BASE_ACORDES.filter(a => !nomesBanco.includes(a.nome.toUpperCase()));
+            const todosAcordes = [...acordesBanco, ...baseFiltrada];
+
+            // 3. FILTRAGEM POR INSTRUMENTO SELECIONADO
+            let acordesFiltrados = todosAcordes.filter(acorde => {
+                if (instrumentoAtual === 'violao') {
+                    if (!acorde.g) return false;
+                    return acorde.g.some(v => v !== 0);
+                } else {
+                    return acorde.k && acorde.k.length > 0;
+                }
+            });
+
+            // 4. FILTRAGEM PELA BUSCA DO USUÁRIO
+            if (termo !== '') {
+                acordesFiltrados = acordesFiltrados.filter(acorde => {
+                    return acorde.nome.toUpperCase().includes(termo) || acorde.tonica.toUpperCase().includes(termo);
+                });
+            }
+
+            // 5. ORDENAÇÃO MUSICAL CORRETA
+            acordesFiltrados.sort((a, b) => {
+                const pesoA = ORDEM_NOTAS[a.tonica.toUpperCase()] || 99;
+                const pesoB = ORDEM_NOTAS[b.tonica.toUpperCase()] || 99;
+
+                if (pesoA !== pesoB) {
+                    return pesoA - pesoB;
+                }
+                return a.nome.localeCompare(b.nome);
+            });
+
+            if (acordesFiltrados.length === 0) {
+                container.innerHTML = `<p class="text-muted text-center w-100 my-4">Nenhum acorde encontrado.</p>`;
+                return;
+            }
+
+            // 6. RENDERIZAÇÃO NA GRADE
+            container.innerHTML = acordesFiltrados.map(acorde => `
+                <div class="chord-card">
+                    <div class="chord-header">
+                        <span class="chord-name">${escaparHTML(acorde.nome)}</span>
+                        <span class="chord-sub">${escaparHTML(acorde.tipo)}</span>
+                    </div>
+                    <div class="chord-svg-box">
+                        ${instrumentoAtual === 'violao' ? geradorSVGGuiaViolao(acorde.g) : geradorSVGGuiaTeclado(acorde.k)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // RENDERIZADOR SVG VIOLÃO
+        function geradorSVGGuiaViolao(posicaoCerdas) {
+            if (!posicaoCerdas || !Array.isArray(posicaoCerdas) || posicaoCerdas.length < 6) {
+                posicaoCerdas = [-1, -1, -1, -1, -1, -1];
+            }
+
+            const totalCordas = 6;
+            const totalCasas = 5;
+            const largura = 170;
+            const altura = 150;
+            const margemX = 35;
+            const margemY = 30;
+            const espacoCordas = 20;
+            const espacoCasas = 22;
+
+            const casasPressionadas = posicaoCerdas.filter(c => c > 0);
+            const menorCasa = casasPressionadas.length > 0 ? Math.min(...casasPressionadas) : 0;
+
+            const cordasNaMenorCasa = [];
+            posicaoCerdas.forEach((casa, idx) => {
+                if (casa === menorCasa) {
+                    cordasNaMenorCasa.push(idx);
+                }
+            });
+
+            const minCordaPestana = cordasNaMenorCasa.length > 0 ? Math.min(...cordasNaMenorCasa) : -1;
+            const maxCordaPestana = cordasNaMenorCasa.length > 0 ? Math.max(...cordasNaMenorCasa) : -1;
+
+            let temPestanaAuto = false;
+            if (cordasNaMenorCasa.length >= 3 && maxCordaPestana === 5) {
+                let temCordaSoltaNoMeio = false;
+                for (let i = minCordaPestana; i <= maxCordaPestana; i++) {
+                    if (posicaoCerdas[i] === 0) {
+                        temCordaSoltaNoMeio = true;
+                        break;
+                    }
+                }
+                if (!temCordaSoltaNoMeio) {
+                    temPestanaAuto = true;
+                }
+            }
+
+            let svgElements = '';
+
+            svgElements += `<rect x="${margemX - 2}" y="${margemY - 4}" width="${(totalCordas - 1) * espacoCordas + 4}" height="5" fill="#D1D5DB" rx="1"/>`;
+
+            for (let i = 0; i < totalCordas; i++) {
+                const x = margemX + (i * espacoCordas);
+                const casa = posicaoCerdas[i];
+
+                if (casa === 0) {
+                    svgElements += `<circle cx="${x}" cy="${margemY - 12}" r="3.5" fill="none" stroke="#D97706" stroke-width="1.5"/>`;
+                } else if (casa === -1) {
+                    svgElements += `
+                        <line x1="${x - 3.5}" y1="${margemY - 15.5}" x2="${x + 3.5}" y2="${margemY - 8.5}" stroke="#EF4444" stroke-width="1.5"/>
+                        <line x1="${x + 3.5}" y1="${margemY - 15.5}" x2="${x - 3.5}" y2="${margemY - 8.5}" stroke="#EF4444" stroke-width="1.5"/>
+                    `;
+                }
+
+                svgElements += `<line x1="${x}" y1="${margemY}" x2="${x}" y2="${margemY + (totalCasas * espacoCasas)}" stroke="#374151" stroke-width="1.5"/>`;
+            }
+
+            for (let j = 0; j <= totalCasas; j++) {
+                const y = margemY + (j * espacoCasas);
+                svgElements += `<line x1="${margemX}" y1="${y}" x2="${margemX + ((totalCordas - 1) * espacoCordas)}" y2="${y}" stroke="#4B5563" stroke-width="1.5"/>`;
+            }
+
+            if (temPestanaAuto) {
+                const yPestana = margemY + (menorCasa * espacoCasas) - (espacoCasas / 2);
+                const x1 = margemX + (minCordaPestana * espacoCordas);
+                const x2 = margemX + (maxCordaPestana * espacoCordas);
+
+                svgElements += `
+                    <rect x="${x1 - 6}" y="${yPestana - 5}" width="${(x2 - x1) + 12}" height="10" rx="5" fill="#D97706"/>
+                `;
+            }
+
+            for (let i = 0; i < totalCordas; i++) {
+                const casa = posicaoCerdas[i];
+                if (casa > 0) {
+                    if (temPestanaAuto && casa === menorCasa && i >= minCordaPestana && i <= maxCordaPestana) {
+                        continue;
+                    }
+
+                    const x = margemX + (i * espacoCordas);
+                    const y = margemY + (casa * espacoCasas) - (espacoCasas / 2);
+
+                    svgElements += `<circle cx="${x}" cy="${y}" r="6" fill="#D97706"/>`;
+                }
+            }
+
+            return `
+                <svg viewBox="0 0 ${largura} ${altura}" width="100%" height="100%">
+                    ${svgElements}
+                </svg>
+            `;
+        }
+
+        // RENDERIZADOR SVG TECLADO
+        const SEMITONOMAP = {
+            'C': 0, 'C#': 1, 'Db': 1,
+            'D': 2, 'D#': 3, 'Eb': 3,
+            'E': 4,
+            'F': 5, 'F#': 6, 'Gb': 6,
+            'G': 7, 'G#': 8, 'Ab': 8,
+            'A': 9, 'A#': 10, 'Bb': 10,
+            'B': 11
+        };
+
+        function geradorSVGGuiaTeclado(activeKeys, tonicaStr) {
+            if (!activeKeys || activeKeys.length === 0) activeKeys = [];
+
+            const keysArray = Array.isArray(activeKeys) ? [...activeKeys] : [];
+
+            let semitonoTonica = 0;
+            if (tonicaStr && SEMITONOMAP[tonicaStr.toUpperCase()] !== undefined) {
+                semitonoTonica = SEMITONOMAP[tonicaStr.toUpperCase()];
+            } else if (keysArray.length > 0) {
+                semitonoTonica = keysArray[0] % 12;
+            }
+
+            const notasHarmonicas = keysArray.map(rawNote => {
+                const semitono = (rawNote % 12 + 12) % 12;
+                if (semitono < semitonoTonica) {
+                    return semitono + 12;
+                }
+                return semitono;
+            }).sort((a, b) => a - b);
+
+            let notaInicioBranca = semitonoTonica;
+            if (semitonoTonica !== 0) {
+                notaInicioBranca = semitonoTonica - 1;
+                while ([1, 3, 6, 8, 10].includes((notaInicioBranca % 12 + 12) % 12)) {
+                    notaInicioBranca--;
+                }
+            }
+
+            const maiorNotaAcorde = notasHarmonicas.length > 0 ? notasHarmonicas[notasHarmonicas.length - 1] : semitonoTonica + 7;
+
+            const whiteKeys = [];
+            const blackKeys = [];
+            let noteCursor = notaInicioBranca;
+
+            while (whiteKeys.length < 7 || noteCursor <= maiorNotaAcorde) {
+                const semitono = (noteCursor % 12 + 12) % 12;
+                if (![1, 3, 6, 8, 10].includes(semitono)) {
+                    whiteKeys.push(noteCursor);
+                } else {
+                    blackKeys.push(noteCursor);
+                }
+                noteCursor++;
+            }
+
+            const totalTeclasBrancas = whiteKeys.length;
+            const larguraSvg = totalTeclasBrancas * 24 + 8;
+
+            let wKeysSvg = '';
+            let bKeysSvg = '';
+
+            whiteKeys.forEach((noteVal, idx) => {
+                const isActive = notasHarmonicas.includes(noteVal) || notasHarmonicas.includes(noteVal % 12);
+                const fill = isActive ? '#D97706' : '#1F2937';
+                const xPos = idx * 24 + 4;
+                
+                wKeysSvg += `<rect x="${xPos}" y="10" width="22" height="110" rx="3" fill="${fill}" stroke="#374151" stroke-width="1.5"/>`;
+
+                const proximaPreta = noteVal + 1;
+                const semitonoPreta = (proximaPreta % 12 + 12) % 12;
+
+                if ([1, 3, 6, 8, 10].includes(semitonoPreta)) {
+                    const isBlackActive = notasHarmonicas.includes(proximaPreta) || notasHarmonicas.includes(proximaPreta % 12);
+                    const blackFill = isBlackActive ? '#F59E0B' : '#111827';
+                    const bxPos = xPos + 15;
+                    bKeysSvg += `<rect x="${bxPos}" y="10" width="13" height="68" rx="2" fill="${blackFill}" stroke="#000000" stroke-width="1"/>`;
+                }
+            });
+
+            return `
+                <svg viewBox="0 0 ${larguraSvg} 130" width="100%" height="100%">
+                    ${wKeysSvg}
+                    ${bKeysSvg}
+                </svg>
+            `;
+        }
+
+        const observerRepertorio = new MutationObserver(() => {
+            const containerRepertorio = document.getElementById('listaRepertorio');
+            if (!containerRepertorio) return;
+
+            const cards = containerRepertorio.querySelectorAll('article');
+            cards.forEach(card => {
+                if (!card.querySelector('.btn-cifraclub')) {
+                    const smallTom = card.querySelector('small');
+                    if (smallTom) {
+                        const linkCifra = document.createElement('a');
+                        linkCifra.className = 'btn-cifraclub';
+                        linkCifra.target = '_blank';
+                        linkCifra.rel = 'noopener noreferrer';
+                    }
+                }
+            });
+        });
+
+        const targetLista = document.getElementById('listaRepertorio');
+        if (targetLista) {
+            observerRepertorio.observe(targetLista, { childList: true, subtree: true });
+        }
+    </script>
+
+    <!-- SDK SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- SCRIPT DE REGRA DE NEGÓCIO DA APLICAÇÃO (MANTIDO INTACTO) -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>

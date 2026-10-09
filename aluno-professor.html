@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Harmônico — Detalhes do Aluno</title>
+
+    <!-- Tipografia Profissional Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 (Grid e Utilitários) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           SISTEMA DE DESIGN & VARIÁVEIS (PADRÃO GUIA HARMÔNICO)
+           ========================================================================== */
+        :root {
+            --bg-body: #0F1115;
+            --surface-card: #161920;
+            --surface-border: #262A34;
+            --surface-hover: #1E222B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+
+            --brand-primary: #D97706;
+            --brand-hover: #B45309;
+            --brand-focus: rgba(217, 119, 6, 0.20);
+            --brand-surface: rgba(217, 119, 6, 0.08);
+
+            --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+            --transition-smooth: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER & NAVEGAÇÃO */
+        .app-header {
+            background-color: var(--surface-card);
+            border-bottom: 1px solid var(--surface-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.6rem 0;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .brand-logo-img {
+            height: 32px; /* Ajuste a altura ideal para a sua imagem */
+            width: auto;  /* Mantém a proporção original */
+            object-fit: contain;
+        }
+
+        .brand-logo-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--brand-primary);
+        }
+
+        .brand-logo-text {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .btn-back-link {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-back-link:hover {
+            color: var(--text-primary);
+            background-color: var(--surface-hover);
+        }
+
+        .user-pill {
+            background-color: var(--bg-body);
+            border: 1px solid var(--surface-border);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-avatar {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--brand-primary);
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            padding: 0.35rem 0.75rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-logout:hover {
+            color: #EF4444;
+        }
+
+        /* PERFIL DO ALUNO (HERO PANEL) */
+        .hero-panel {
+            background-color: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background-color: var(--brand-primary);
+        }
+
+        .hero-tag {
+            font-size: 0.75rem;
+            font-family: monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--brand-primary);
+            margin-bottom: 0.35rem;
+            display: block;
+        }
+
+        .hero-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin: 0;
+            font-family: monospace;
+        }
+
+        /* BARRA DE AÇÕES RÁPIDAS */
+        .actions-bar {
+            background-color: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .actions-bar-title {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.85rem;
+        }
+
+        .btn-action-primary {
+            background-color: var(--brand-primary);
+            color: #FFFFFF;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-action-primary:hover {
+            background-color: var(--brand-hover);
+            color: #FFFFFF;
+        }
+
+        /* PAINÉIS DE LISTAS (TAREFAS, ANOTAÇÕES, REPERTÓRIO) */
+        .content-panel {
+            background-color: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .panel-title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ESTILO PARA OS ITENS DA LISTA GERADOS PELO JS */
+        #tarefasAlunoProfessor article,
+        #anotacoesAlunoProfessor article,
+        #repertorioAlunoProfessor article {
+            background-color: var(--bg-body);
+            border: 1px solid var(--surface-border);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: var(--transition-smooth);
+        }
+
+        #tarefasAlunoProfessor article:hover,
+        #anotacoesAlunoProfessor article:hover,
+        #repertorioAlunoProfessor article:hover {
+            border-color: #374151;
+        }
+
+        #tarefasAlunoProfessor h3,
+        #anotacoesAlunoProfessor h3,
+        #repertorioAlunoProfessor h3 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+        }
+
+        #tarefasAlunoProfessor p,
+        #anotacoesAlunoProfessor p,
+        #repertorioAlunoProfessor p {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+        }
+
+        #tarefasAlunoProfessor small,
+        #anotacoesAlunoProfessor small,
+        #repertorioAlunoProfessor small {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Ações do Card (Lápis e Lixeira) */
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 0.75rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--surface-border);
+        }
+
+        .btn-card-edit, .btn-card-delete {
+            background: transparent;
+            border: 1px solid var(--surface-border);
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-card-edit {
+            color: var(--text-secondary);
+        }
+
+        .btn-card-edit:hover {
+            color: var(--brand-primary);
+            border-color: var(--brand-primary);
+            background-color: var(--brand-surface);
+        }
+
+        .btn-card-delete {
+            color: var(--text-muted);
+        }
+
+        .btn-card-delete:hover {
+            color: #EF4444;
+            border-color: rgba(239, 68, 68, 0.4);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        /* ESTILIZAÇÃO DOS MODAIS (DIALOG NATIVO ESTILIZADO) */
+        dialog {
+            background-color: var(--surface-card);
+            color: var(--text-primary);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 1.75rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+        }
+
+        dialog h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            background-color: var(--bg-body);
+            border: 1px solid var(--surface-border);
+            border-radius: 6px;
+            padding: 0.55rem 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: inherit;
+            transition: var(--transition-smooth);
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px var(--brand-focus);
+        }
+
+        textarea.form-control-custom {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-cancel:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+        }
+
+        .spinner-custom {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--surface-border);
+            border-top-color: var(--brand-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            margin-top: auto;
+            border-top: 1px solid var(--surface-border);
+            padding: 1.5rem 0;
+            background-color: var(--surface-card);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CABEÇALHO / NAVEGAÇÃO -->
+    <header class="app-header">
+        <div class="container d-flex align-items-center justify-content-between py-2.5">
+            <a class="brand-logo" href="dashboard.html">
+                    <img src="assets/logo.png" alt="Guia Harmônico" class="brand-logo-img">
+                    <span class="brand-logo-text">Guia Harmônico</span>
+                </a>
+            
+
+            
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="user-pill">
+                    <span class="user-avatar"></span>
+                    <span id="nomeProfessor">Professor</span>
+                </div>
+                <nav>
+                <a class="btn-back-link" href="professor.html">
+                    Voltar
+                </a>
+            </nav>
+                <button id="botaoSair" class="btn-logout">
+                    Sair
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="container my-4">
+
+        <!-- CABEÇALHO DO ALUNO (HERO) -->
+        <section class="hero-panel">
+            <span class="hero-tag">Perfil do Aluno</span>
+            <h1 class="hero-title" id="nomeAlunoProfessor">Carregando...</h1>
+            <p class="hero-subtitle" id="loginAlunoProfessor">Carregando...</p>
+        </section>
+
+        <!-- BARRA DE AÇÕES -->
+        <section class="actions-bar">
+            <div class="actions-bar-title">Gerenciar Conteúdo do Aluno</div>
+            <div class="d-flex flex-wrap gap-2">
+                <button id="botaoNovaTarefa" class="btn-action-primary">
+                    + Nova tarefa
+                </button>
+                <button id="botaoNovaAnotacao" class="btn-action-primary">
+                    + Nova anotação
+                </button>
+                <button id="botaoNovoRepertorio" class="btn-action-primary">
+                    + Adicionar música
+                </button>
+            </div>
+        </section>
+
+        <!-- CONTEÚDO: TAREFAS, ANOTAÇÕES E REPERTÓRIO -->
+        <div class="row g-4">
+
+            <!-- SEÇÃO TAREFAS -->
+            <div class="col-12 col-lg-6">
+                <section class="content-panel">
+                    <div class="panel-title-bar">
+                        <h2 class="panel-title">Tarefas</h2>
+                    </div>
+                    <div id="tarefasAlunoProfessor">
+                        <div class="loading-state">
+                            <span class="spinner-custom"></span> Carregando tarefas...
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- SEÇÃO ANOTAÇÕES -->
+            <div class="col-12 col-lg-6">
+                <section class="content-panel">
+                    <div class="panel-title-bar">
+                        <h2 class="panel-title">Anotações & Arquivos</h2>
+                    </div>
+                    <div id="anotacoesAlunoProfessor">
+                        <div class="loading-state">
+                            <span class="spinner-custom"></span> Carregando anotações...
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- SEÇÃO REPERTÓRIO -->
+            <div class="col-12">
+                <section class="content-panel">
+                    <div class="panel-title-bar">
+                        <h2 class="panel-title">Repertório</h2>
+                    </div>
+                    <div id="repertorioAlunoProfessor">
+                        <div class="loading-state">
+                            <span class="spinner-custom"></span> Carregando repertório...
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ========================================= -->
+    <!-- MODAIS / FORMULÁRIOS DE CRIAÇÃO           -->
+    <!-- ========================================= -->
+
+    <!-- MODAL: NOVA TAREFA -->
+    <dialog id="modalTarefa">
+        <form id="formNovaTarefa">
+            <h3>Criar Nova Tarefa</h3>
+            
+            <div class="form-group">
+                <label for="tarefaTitulo">Título:*</label>
+                <input type="text" id="tarefaTitulo" class="form-control-custom" required placeholder="Ex: Treinar escala maior">
+            </div>
+
+            <div class="form-group">
+                <label for="tarefaDescricao">Descrição:</label>
+                <textarea id="tarefaDescricao" class="form-control-custom" placeholder="Instruções da tarefa..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tarefaPrazo">Prazo:</label>
+                <input type="date" id="tarefaPrazo" class="form-control-custom">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel btnFecharModal">Cancelar</button>
+                <button type="submit" class="btn-action-primary">Salvar Tarefa</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- MODAL: NOVA ANOTAÇÃO -->
+    <dialog id="modalAnotacao">
+        <form id="formNovaAnotacao">
+            <h3>Nova Anotação / PDF</h3>
+            
+            <div class="form-group">
+                <label for="anotacaoTitulo">Título:*</label>
+                <input type="text" id="anotacaoTitulo" class="form-control-custom" required placeholder="Ex: Partitura de Exercício">
+            </div>
+
+            <div class="form-group">
+                <label for="anotacaoConteudo">Conteúdo / Observação:</label>
+                <textarea id="anotacaoConteudo" class="form-control-custom" placeholder="Anotações adicionais..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="anotacaoUrl">Link do PDF/Arquivo (URL):</label>
+                <input type="url" id="anotacaoUrl" class="form-control-custom" placeholder="https://exemplo.com/arquivo.pdf">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel btnFecharModal">Cancelar</button>
+                <button type="submit" class="btn-action-primary">Salvar Anotação</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- MODAL: NOVO REPERTÓRIO -->
+    <dialog id="modalRepertorio">
+        <form id="formNovoRepertorio">
+            <h3>Adicionar Música ao Repertório</h3>
+            
+            <div class="form-group">
+                <label for="repertorioTitulo">Título da Música:*</label>
+                <input type="text" id="repertorioTitulo" class="form-control-custom" required placeholder="Ex: Garota de Ipanema">
+            </div>
+
+            <div class="form-group">
+                <label for="repertorioArtista">Artista / Compositor:</label>
+                <input type="text" id="repertorioArtista" class="form-control-custom" placeholder="Ex: Tom Jobim">
+            </div>
+
+            <div class="form-group">
+                <label for="repertorioTom">Tom:</label>
+                <input type="text" id="repertorioTom" class="form-control-custom" placeholder="Ex: F#m">
+            </div>
+
+            <div class="form-group">
+                <label for="repertorioCifra">Cifra / Letra:</label>
+                <textarea id="repertorioCifra" class="form-control-custom" placeholder="Cole a cifra aqui..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel btnFecharModal">Cancelar</button>
+                <button type="submit" class="btn-action-primary">Salvar Música</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- ========================================= -->
+    <!-- MODAIS / FORMULÁRIOS DE EDIÇÃO            -->
+    <!-- ========================================= -->
+
+    <!-- MODAL: EDITAR TAREFA -->
+    <dialog id="modalEditarTarefa">
+        <form id="formEditarTarefa">
+            <input type="hidden" id="editTarefaId">
+            <h3>Editar Tarefa</h3>
+            
+            <div class="form-group">
+                <label for="editTarefaTitulo">Título:*</label>
+                <input type="text" id="editTarefaTitulo" class="form-control-custom" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editTarefaDescricao">Descrição:</label>
+                <textarea id="editTarefaDescricao" class="form-control-custom"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="editTarefaPrazo">Prazo:</label>
+                <input type="date" id="editTarefaPrazo" class="form-control-custom">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel btnFecharModal">Cancelar</button>
+                <button type="submit" class="btn-action-primary">Atualizar Tarefa</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- MODAL: EDITAR ANOTAÇÃO -->
+    <dialog id="modalEditarAnotacao">
+        <form id="formEditarAnotacao">
+            <input type="hidden" id="editAnotacaoId">
+            <h3>Editar Anotação / PDF</h3>
+            
+            <div class="form-group">
+                <label for="editAnotacaoTitulo">Título:*</label>
+                <input type="text" id="editAnotacaoTitulo" class="form-control-custom" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editAnotacaoConteudo">Conteúdo / Observação:</label>
+                <textarea id="editAnotacaoConteudo" class="form-control-custom"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="editAnotacaoUrl">Link do PDF/Arquivo (URL):</label>
+                <input type="url" id="editAnotacaoUrl" class="form-control-custom">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel btnFecharModal">Cancelar</button>
+                <button type="submit" class="btn-action-primary">Atualizar Anotação</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- MODAL: EDITAR REPERTÓRIO -->
+    <dialog id="modalEditarRepertorio">
+        <form id="formEditarRepertorio">
+            <input type="hidden" id="editRepertorioId">
+            <h3>Editar Música</h3>
+            
+            <div class="form-group">
+                <label for="editRepertorioTitulo">Título da Música:*</label>
+                <input type="text" id="editRepertorioTitulo" class="form-control-custom" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editRepertorioArtista">Artista / Compositor:</label>
+                <input type="text" id="editRepertorioArtista" class="form-control-custom">
+            </div>
+
+            <div class="form-group">
+                <label for="editRepertorioTom">Tom:</label>
+                <input type="text" id="editRepertorioTom" class="form-control-custom">
+            </div>
+
+            <div class="form-group">
+                <label for="editRepertorioCifra">Cifra / Letra:</label>
+                <textarea id="editRepertorioCifra" class="form-control-custom"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel btnFecharModal">Cancelar</button>
+                <button type="submit" class="btn-action-primary">Atualizar Música</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Script Principal -->
+    <script src="script.js"></script>
+
+</body>
+</html>
