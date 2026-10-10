@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guia Harmônico — Área do Aluno</title>
 
+    <link rel="icon" type="image/png" href="assets/logo.png">
     <!-- Tipografia Profissional Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,6 +62,16 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* LIMITADOR DE LARGURA PADRÃO DO SISTEMA (MAX-WIDTH AJUSTADO) */
+        .app-container-limit {
+            width: 100%;
+            max-width: 960px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
         /* HEADER & NAVEGAÇÃO */
         .app-header {
             background-color: var(--surface-card);
@@ -80,15 +91,9 @@
         }
 
         .brand-logo-img {
-            height: 32px; /* Ajuste a altura ideal para a sua imagem */
-            width: auto;  /* Mantém a proporção original */
+            height: 32px;
+            width: auto;
             object-fit: contain;
-        }
-
-        .brand-logo-icon {
-            width: 24px;
-            height: 24px;
-            color: var(--brand-primary);
         }
 
         .brand-logo-text {
@@ -246,6 +251,7 @@
             border-radius: 8px;
             padding: 1.5rem;
             min-height: 300px;
+            margin-bottom: 2rem;
         }
 
         .tab-content.active {
@@ -343,9 +349,6 @@
 
         .instrumento-toggle {
             display: flex;
-            background-color: var(--surface-card);
-            border: 1px solid var(--surface-border);
-            border-radius: 6px;
             padding: 0px 5px 5px 5px;
         }
 
@@ -520,13 +523,11 @@
 
     <!-- CABEÇALHO / NAVEGAÇÃO -->
     <header class="app-header">
-        <div class="container d-flex align-items-center justify-content-between py-2.5">
-            
-                <a class="brand-logo" href="dashboard.html">
-                    <img src="assets/logo.png" alt="Guia Harmônico" class="brand-logo-img">
-                    <span class="brand-logo-text">Guia Harmônico</span>
-                </a>
-            
+        <div class="app-container-limit d-flex align-items-center justify-content-between py-2.5">
+            <a class="brand-logo" href="dashboard.html">
+                <img src="assets/logo.png" alt="Guia Harmônico" class="brand-logo-img">
+                <span class="brand-logo-text">Guia Harmônico</span>
+            </a>
 
             <div class="d-flex align-items-center gap-3">
                 <div class="user-pill">
@@ -540,8 +541,8 @@
         </div>
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="container my-4">
+    <!-- CONTEÚDO PRINCIPAL COM CONTAINER DELIMITADO -->
+    <main class="app-container-limit my-4">
 
         <!-- BOAS-VINDAS / PERFIL DO ALUNO -->
         <section class="hero-panel">
@@ -658,23 +659,19 @@
     <script>
         // Função para as abas superiores (Desktop / Mobile Tarefas e Anotações)
         function alternarAba(idAba, elemento) {
-            // 1. Limpa o destaque de TODAS as abas e botões do footer
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
 
-            // 2. Ativa o conteúdo da aba selecionada
             const abaAlvo = document.getElementById(idAba);
             if (abaAlvo) {
                 abaAlvo.classList.add('active');
             }
 
-            // 3. Marca apenas o botão do topo clicado como ativo
             if (elemento) {
                 elemento.classList.add('active');
             }
 
-            // 4. Se o botão do topo for Repertório ou Dicionário, destaca também o ícone do footer no mobile
             if (idAba === 'aba-repertorio') {
                 const btnMob = document.getElementById('mobile-btn-repertorio');
                 if (btnMob) btnMob.classList.add('active');
@@ -687,23 +684,19 @@
 
         // Função para a barra inferior (Footer Mobile)
         function alternarAbaMobile(idAba, elemento) {
-            // 1. Limpa o destaque de tudo
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
 
-            // 2. Ativa o conteúdo selecionado
             const abaAlvo = document.getElementById(idAba);
             if (abaAlvo) {
                 abaAlvo.classList.add('active');
             }
 
-            // 3. Marca apenas o botão do footer clicado como ativo
             if (elemento) {
                 elemento.classList.add('active');
             }
 
-            // 4. Sincroniza ativando a aba equivalente no topo
             const btnTopo = document.querySelector(`.tab-button[onclick*="${idAba}"]`);
             if (btnTopo) {
                 btnTopo.classList.add('active');
@@ -716,13 +709,10 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Função para o botão Perfil na nav inferior
         function rolarParaPerfilMobile(elemento) {
-            // Limpa destaque de todas as abas e botões
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
 
-            // Marca apenas o botão Perfil
             if (elemento) {
                 elemento.classList.add('active');
             }
@@ -732,7 +722,6 @@
 
         let instrumentoAtual = 'violao';
 
-        // BASE ÚNICA E MAPEADA DE ACORDES
         const BASE_ACORDES = [
             { nome: 'C', tonica: 'C', tipo: 'Maior', g: [-1, 3, 2, 0, 1, 0], k: [0, 4, 7] },
             { nome: 'Cm', tonica: 'C', tipo: 'Menor', g: [-1, 3, 5, 5, 4, 3], k: [0, 3, 7] },
@@ -763,7 +752,6 @@
             renderizarGradeAcordes();
         }
 
-        // ORDENADOR CROMÁTICO MUSICAL
         const ORDEM_NOTAS = { 'C': 1, 'C#': 2, 'D': 3, 'D#': 4, 'E': 5, 'F': 6, 'F#': 7, 'G': 8, 'G#': 9, 'A': 10, 'A#': 11, 'B': 12 };
 
         async function renderizarGradeAcordes() {
@@ -772,7 +760,6 @@
 
             const termo = document.getElementById('filtroAcorde').value.trim().toUpperCase();
 
-            // 1. Busca do Supabase
             let acordesBanco = [];
             try {
                 const { data, error } = await supabaseClient.from('acordes').select('*');
@@ -789,12 +776,10 @@
                 console.warn("Erro ao buscar acordes do banco:", err);
             }
 
-            // 2. Unifica banco com a base padrao sem duplicar
             const nomesBanco = acordesBanco.map(a => a.nome.toUpperCase());
             const baseFiltrada = BASE_ACORDES.filter(a => !nomesBanco.includes(a.nome.toUpperCase()));
             const todosAcordes = [...acordesBanco, ...baseFiltrada];
 
-            // 3. FILTRAGEM POR INSTRUMENTO SELECIONADO
             let acordesFiltrados = todosAcordes.filter(acorde => {
                 if (instrumentoAtual === 'violao') {
                     if (!acorde.g) return false;
@@ -804,14 +789,12 @@
                 }
             });
 
-            // 4. FILTRAGEM PELA BUSCA DO USUÁRIO
             if (termo !== '') {
                 acordesFiltrados = acordesFiltrados.filter(acorde => {
                     return acorde.nome.toUpperCase().includes(termo) || acorde.tonica.toUpperCase().includes(termo);
                 });
             }
 
-            // 5. ORDENAÇÃO MUSICAL CORRETA
             acordesFiltrados.sort((a, b) => {
                 const pesoA = ORDEM_NOTAS[a.tonica.toUpperCase()] || 99;
                 const pesoB = ORDEM_NOTAS[b.tonica.toUpperCase()] || 99;
@@ -827,12 +810,11 @@
                 return;
             }
 
-            // 6. RENDERIZAÇÃO NA GRADE
             container.innerHTML = acordesFiltrados.map(acorde => `
                 <div class="chord-card">
                     <div class="chord-header">
-                        <span class="chord-name">${escaparHTML(acorde.nome)}</span>
-                        <span class="chord-sub">${escaparHTML(acorde.tipo)}</span>
+                        <span class="chord-name">${acorde.nome}</span>
+                        <span class="chord-sub">${acorde.tipo}</span>
                     </div>
                     <div class="chord-svg-box">
                         ${instrumentoAtual === 'violao' ? geradorSVGGuiaViolao(acorde.g) : geradorSVGGuiaTeclado(acorde.k)}
@@ -841,7 +823,6 @@
             `).join('');
         }
 
-        // RENDERIZADOR SVG VIOLÃO
         function geradorSVGGuiaViolao(posicaoCerdas) {
             if (!posicaoCerdas || !Array.isArray(posicaoCerdas) || posicaoCerdas.length < 6) {
                 posicaoCerdas = [-1, -1, -1, -1, -1, -1];
@@ -939,7 +920,6 @@
             `;
         }
 
-        // RENDERIZADOR SVG TECLADO
         const SEMITONOMAP = {
             'C': 0, 'C#': 1, 'Db': 1,
             'D': 2, 'D#': 3, 'Eb': 3,
@@ -1025,35 +1005,12 @@
                 </svg>
             `;
         }
-
-        const observerRepertorio = new MutationObserver(() => {
-            const containerRepertorio = document.getElementById('listaRepertorio');
-            if (!containerRepertorio) return;
-
-            const cards = containerRepertorio.querySelectorAll('article');
-            cards.forEach(card => {
-                if (!card.querySelector('.btn-cifraclub')) {
-                    const smallTom = card.querySelector('small');
-                    if (smallTom) {
-                        const linkCifra = document.createElement('a');
-                        linkCifra.className = 'btn-cifraclub';
-                        linkCifra.target = '_blank';
-                        linkCifra.rel = 'noopener noreferrer';
-                    }
-                }
-            });
-        });
-
-        const targetLista = document.getElementById('listaRepertorio');
-        if (targetLista) {
-            observerRepertorio.observe(targetLista, { childList: true, subtree: true });
-        }
     </script>
 
     <!-- SDK SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- SCRIPT DE REGRA DE NEGÓCIO DA APLICAÇÃO (MANTIDO INTACTO) -->
+    <!-- SCRIPT DE REGRA DE NEGÓCIO DA APLICAÇÃO -->
     <script src="script.js"></script>
 
 </body>
