@@ -381,6 +381,22 @@
                 btnToggle.textContent = "Mostrar senha";
             }
         }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const usuarioSalvo = localStorage.getItem("guiaHarmonico_usuario");
+            if (usuarioSalvo) {
+                try {
+                    const usuario = JSON.parse(usuarioSalvo);
+                    if (usuario && usuario.tipo === "professor") {
+                        window.location.href = "professor.html";
+                    } else if (usuario) {
+                        window.location.href = "dashboard.html";
+                    }
+                } catch (e) {
+                    localStorage.removeItem("guiaHarmonico_usuario");
+                }
+            }
+        });
     </script>
 
     <!-- Supabase JS -->
