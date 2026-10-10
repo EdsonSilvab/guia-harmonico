@@ -173,9 +173,48 @@ async function buscarRepertorioPorUsuario(usuarioId) {
     return data || [];
 }
 
+async function buscarAulasPorUsuario(usuarioId) {
+    const { data, error } = await supabaseClient
+        .from("aulas")
+        .select(`
+            *,
+            tarefas ( titulo ),
+            anotacoes ( titulo )
+        `)
+        .eq("aluno_id", usuarioId)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Erro ao buscar aulas:", error);
+        return [];
+    }
+    return data || [];
+}
+
 // =========================================
 // RENDERIZAÇÃO PARA DASHBOARD DO ALUNO
 // =========================================
+function mostrarAulasAluno(listaAulas) {
+    const container = document.getElementById('listaAulasAluno');
+    if (!container) return;
+
+    if (!listaAulas || listaAulas.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.8125rem;">Nenhuma aula registrada ainda.</p>';
+        return;
+    }
+
+    container.innerHTML = listaAulas.map(a => `
+        <article class="aula">
+            <h3>${escaparHTML(a.titulo)}</h3>
+            <p style="white-space: pre-wrap;">${escaparHTML(a.anotacoes_aula || 'Sem observações da aula.')}</p>
+            <small>📅 Data: ${a.data_aula ? formatarData(a.data_aula) : 'Não informada'}
+                ${a.tarefas ? ` | 📋 Tarefa: ${escaparHTML(a.tarefas.titulo)}` : ''}
+                ${a.anotacoes ? ` | 📎 Anotação: ${escaparHTML(a.anotacoes.titulo)}` : ''}
+            </small>
+        </article>
+    `).join('');
+}
+
 function mostrarTarefas(listaTarefas) {
     const container = document.getElementById('listaTarefas') || document.getElementById('tarefasAlunoProfessor');
     if (!container) return;
@@ -242,7 +281,7 @@ function mostrarAnotacoes(listaAnotacoes) {
 
     container.innerHTML = listaAnotacoes.map(a => {
         const pdfLink = a.arquivo_url
-            ? `<p><a href="${escaparHTML(a.arquivo_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--brand-primary); font-size: 0.8125rem;">📎 Abrir arquivo</a></p>`
+            ? `<p><a href="${escaparHTML(a.arquivo_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--brand-primary); font-size: 0.8125rem;">Abrir arquivo</a></p>`
             : '';
 
         return `
@@ -251,7 +290,7 @@ function mostrarAnotacoes(listaAnotacoes) {
                 <p style="white-space: pre-wrap;">${escaparHTML(a.conteudo || 'Sem observações.')}</p>
                 ${pdfLink}
                 <button type="button" onclick="concluirAnotacao('${a.id}')">
-                    ✅ Marcar como lida/concluída
+                    Marcar como concluída
                 </button>
             </article>
         `;
@@ -299,7 +338,6 @@ async function concluirTarefa(tarefaId) {
         return;
     }
 
-    // Recarrega o dashboard para mover a tarefa para a aba de concluídas
     await carregarDashboard();
 }
 
@@ -344,7 +382,8 @@ async function carregarDashboard() {
     if (nomeUsuario) nomeUsuario.textContent = usuario.nome;
     if (nomeAluno) nomeAluno.textContent = usuario.nome;
 
-    const [tarefas, anotacoes, repertorio] = await Promise.all([
+    const [aulas, tarefas, anotacoes, repertorio] = await Promise.all([
+        buscarAulasPorUsuario(usuario.id),
         buscarTarefasPorUsuario(usuario.id),
         buscarAnotacoesPorUsuario(usuario.id),
         buscarRepertorioPorUsuario(usuario.id)
@@ -353,14 +392,17 @@ async function carregarDashboard() {
     const tarefasPendentes = tarefas.filter(tarefa => !tarefa.concluida);
     const tarefasConcluidas = tarefas.filter(tarefa => tarefa.concluida);
 
+    const elemAulas = document.getElementById("quantidadeAulas");
     const elemTarefas = document.getElementById("quantidadeTarefas");
     const elemAnotacoes = document.getElementById("quantidadeAnotacoes");
     const elemRepertorio = document.getElementById("quantidadeRepertorio");
 
+    if (elemAulas) elemAulas.textContent = aulas.length;
     if (elemTarefas) elemTarefas.textContent = tarefasPendentes.length;
     if (elemAnotacoes) elemAnotacoes.textContent = anotacoes.length;
     if (elemRepertorio) elemRepertorio.textContent = repertorio.length;
 
+    mostrarAulasAluno(aulas);
     mostrarTarefas(tarefasPendentes);
     mostrarTarefasConcluidas(tarefasConcluidas);
     mostrarAnotacoes(anotacoes);
@@ -476,6 +518,36 @@ async function carregarAlunoProfessor() {
 async function carregarDadosAlunoProfessor(alunoId) {
     console.log("Carregando dados do aluno para vista do professor:", alunoId);
 
+    // 0. Aulas (NOVO)
+    const aulas = await buscarAulasPorUsuario(alunoId);
+    const listaAulas = document.getElementById("aulasAlunoProfessor");
+
+    if (listaAulas) {
+        if (aulas.length === 0) {
+            listaAulas.innerHTML = `<p style="color: var(--text-muted); font-size: 0.8125rem;">Nenhuma aula registrada.</p>`;
+        } else {
+            listaAulas.innerHTML = aulas.map(a => `
+                <article>
+                    <h3>${escaparHTML(a.titulo)}</h3>
+                    <p style="white-space: pre-wrap;">${escaparHTML(a.anotacoes_aula || "Sem anotações da aula.")}</p>
+                    <small>📅 Data: ${a.data_aula ? formatarData(a.data_aula) : 'Não informada'} 
+                        ${a.tarefas ? `| 📋 Tarefa: ${escaparHTML(a.tarefas.titulo)}` : ''}
+                        ${a.anotacoes ? `| 📎 Anotação: ${escaparHTML(a.anotacoes.titulo)}` : ''}
+                    </small>
+                    
+                    <div class="card-actions">
+                        <button class="btn-card-edit" onclick="abrirModalEditarAula('${a.id}', \`${escapeQuotes(a.titulo)}\`, '${a.data_aula || ''}', \`${escapeQuotes(a.anotacoes_aula || '')}\`, '${a.tarefa_id || ''}', '${a.anotacao_id || ''}')">
+                            Editar
+                        </button>
+                        <button class="btn-card-delete" onclick="excluirItem('aulas', '${a.id}')">
+                            Excluir
+                        </button>
+                    </div>
+                </article>
+            `).join("");
+        }
+    }
+
     // 1. Tarefas
     const tarefas = await buscarTarefasPorUsuario(alunoId);
     const listaTarefas = document.getElementById("tarefasAlunoProfessor");
@@ -513,7 +585,7 @@ async function carregarDadosAlunoProfessor(alunoId) {
         } else {
             listaAnotacoes.innerHTML = anotacoes.map(a => {
                 const pdfLink = a.arquivo_url
-                    ? `<p><a href="${escaparHTML(a.arquivo_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--brand-primary); font-size: 0.8125rem;">📎 Abrir arquivo</a></p>`
+                    ? `<p><a href="${escaparHTML(a.arquivo_url)}" target="_blank" rel="noopener noreferrer" style="color: var(--brand-primary); font-size: 0.8125rem;">Abrir arquivo</a></p>`
                     : '';
 
                 return `
@@ -569,11 +641,16 @@ async function carregarDadosAlunoProfessor(alunoId) {
 // GERENCIAMENTO DE MODAIS E CRIAÇÃO
 // =========================================
 function configurarModaisProfessor() {
+    const modalAula = document.getElementById("modalAula");
     const modalTarefa = document.getElementById("modalTarefa");
     const modalAnotacao = document.getElementById("modalAnotacao");
     const modalRepertorio = document.getElementById("modalRepertorio");
 
     // Abrir Modais
+    document.getElementById("botaoNovaAula")?.addEventListener("click", async () => {
+        await carregarOpcoesVinculoAulas();
+        modalAula?.showModal();
+    });
     document.getElementById("botaoNovaTarefa")?.addEventListener("click", () => modalTarefa?.showModal());
     document.getElementById("botaoNovaAnotacao")?.addEventListener("click", () => modalAnotacao?.showModal());
     document.getElementById("botaoNovoRepertorio")?.addEventListener("click", () => modalRepertorio?.showModal());
@@ -584,6 +661,38 @@ function configurarModaisProfessor() {
             const modal = e.target.closest("dialog");
             if (modal) modal.close();
         });
+    });
+
+    // Submit: Nova Aula (NOVO)
+    document.getElementById("formNovaAula")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const alunoId = localStorage.getItem("guiaHarmonico_alunoSelecionado");
+        if (!alunoId) return;
+
+        const titulo = document.getElementById("aulaTitulo").value;
+        const dataAula = document.getElementById("aulaData").value || null;
+        const anotacoesAula = document.getElementById("aulaAnotacoes").value || null;
+        
+        const tarefaIdRaw = document.getElementById("aulaTarefaSelect").value;
+        const anotacaoIdRaw = document.getElementById("aulaAnotacaoSelect").value;
+
+        const { error } = await supabaseClient.from("aulas").insert([{
+            aluno_id: alunoId,
+            titulo: titulo,
+            data_aula: dataAula,
+            anotacoes_aula: anotacoesAula,
+            tarefa_id: tarefaIdRaw ? parseInt(tarefaIdRaw, 10) : null,
+            anotacao_id: anotacaoIdRaw ? parseInt(anotacaoIdRaw, 10) : null
+        }]);
+
+        if (error) {
+            console.error("Erro ao registrar aula:", error);
+            alert("Erro ao registrar aula: " + error.message);
+        } else {
+            e.target.reset();
+            modalAula?.close();
+            await carregarDadosAlunoProfessor(alunoId);
+        }
     });
 
     // Submit: Nova Tarefa
@@ -682,6 +791,54 @@ function abrirModalEditarTarefa(id, titulo, descricao, prazo) {
     document.getElementById('modalEditarTarefa').showModal();
 }
 
+// Função para carregar opções e abrir o modal de edição de aula preenchendo os campos
+async function abrirModalEditarAula(id, titulo, dataAula, anotacoesAula, tarefaIdAtual, anotacaoIdAtual) {
+    document.getElementById('editAulaId').value = id;
+    document.getElementById('editAulaTitulo').value = titulo;
+    document.getElementById('editAulaData').value = dataAula;
+    document.getElementById('editAulaAnotacoes').value = anotacoesAula;
+
+    const selectTarefa = document.getElementById('editAulaTarefaSelect');
+    const selectAnotacao = document.getElementById('editAulaAnotacaoSelect');
+
+    if (selectTarefa) selectTarefa.innerHTML = '<option value="">Nenhuma tarefa vinculada</option>';
+    if (selectAnotacao) selectAnotacao.innerHTML = '<option value="">Nenhuma anotação vinculada</option>';
+
+    const alunoId = localStorage.getItem("guiaHarmonico_alunoSelecionado");
+
+    if (alunoId) {
+        try {
+            // Buscar tarefas do aluno
+            const { data: tarefas } = await supabaseClient.from('tarefas').select('id, titulo').eq('aluno_id', alunoId);
+            if (tarefas && selectTarefa) {
+                tarefas.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.titulo;
+                    if (String(t.id) === String(tarefaIdAtual)) opt.selected = true;
+                    selectTarefa.appendChild(opt);
+                });
+            }
+
+            // Buscar anotações do aluno
+            const { data: anotacoes } = await supabaseClient.from('anotacoes').select('id, titulo').eq('aluno_id', alunoId);
+            if (anotacoes && selectAnotacao) {
+                anotacoes.forEach(a => {
+                    const opt = document.createElement('option');
+                    opt.value = a.id;
+                    opt.textContent = a.titulo;
+                    if (String(a.id) === String(anotacaoIdAtual)) opt.selected = true;
+                    selectAnotacao.appendChild(opt);
+                });
+            }
+        } catch (err) {
+            console.error('Erro ao carregar selects no modal de edição de aula:', err);
+        }
+    }
+
+    document.getElementById('modalEditarAula').showModal();
+}
+
 function abrirModalEditarAnotacao(id, titulo, conteudo, url) {
     document.getElementById('editAnotacaoId').value = id;
     document.getElementById('editAnotacaoTitulo').value = titulo;
@@ -715,6 +872,28 @@ document.getElementById('formEditarTarefa')?.addEventListener('submit', async (e
     if (error) return alert('Erro ao atualizar: ' + error.message);
     
     document.getElementById('modalEditarTarefa').close();
+    await recarregarDadosAtuais();
+});
+
+document.getElementById('formEditarAula')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editAulaId').value;
+    
+    const tarefaIdRaw = document.getElementById('editAulaTarefaSelect').value;
+    const anotacaoIdRaw = document.getElementById('editAulaAnotacaoSelect').value;
+
+    const updateData = {
+        titulo: document.getElementById('editAulaTitulo').value,
+        data_aula: document.getElementById('editAulaData').value || null,
+        anotacoes_aula: document.getElementById('editAulaAnotacoes').value || null,
+        tarefa_id: tarefaIdRaw ? parseInt(tarefaIdRaw, 10) : null,
+        anotacao_id: anotacaoIdRaw ? parseInt(anotacaoIdRaw, 10) : null
+    };
+
+    const { error } = await supabaseClient.from('aulas').update(updateData).eq('id', id);
+    if (error) return alert('Erro ao atualizar aula: ' + error.message);
+
+    document.getElementById('modalEditarAula').close();
     await recarregarDadosAtuais();
 });
 
@@ -847,12 +1026,9 @@ function renderizarTecladoInteractive() {
     const box = document.getElementById("builderTecladoBox");
     if (!box) return;
 
-    // Teclas Brancas (14 teclas nas 2 oitavas)
     const whiteKeys = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
-    // Teclas Pretas (10 teclas nas 2 oitavas)
     const blackKeys = [1, 3, 6, 8, 10, 13, 15, 18, 20, 22];
     
-    // Posições X exatas das teclas pretas
     const blackX = { 
         1: 30, 3: 72, 6: 156, 8: 198, 10: 240, 
         13: 324, 15: 366, 18: 450, 20: 492, 22: 534 
@@ -866,7 +1042,7 @@ function renderizarTecladoInteractive() {
     let wKeysSvg = '';
     whiteKeys.forEach((note, idx) => {
         const isActive = teclasTecladoBuilder.includes(note);
-        const fill = isActive ? '#D97706' : '#1F2937'; // Laranja / Dark Surface
+        const fill = isActive ? '#D97706' : '#1F2937';
         const xPos = idx * 42 + 10;
 
         wKeysSvg += `
@@ -1104,7 +1280,6 @@ function configurarCadastroAcorde() {
         const tonica = document.getElementById("acordeTonica").value.trim().toUpperCase();
         const tipo = document.getElementById("acordeTipo").value.trim();
 
-        // 1. Verifica se montou no Violão
         let gFinal = [];
         const temNotasViolao = posicaoNotasBuilder.some(val => val !== 0) || pestanaBuilder !== null;
         
@@ -1119,13 +1294,11 @@ function configurarCadastroAcorde() {
             }
         }
 
-        // 2. Verifica se montou no Teclado
         let kFinal = [];
         if (teclasTecladoBuilder.length > 0) {
             kFinal = [...teclasTecladoBuilder].sort((a, b) => a - b);
         }
 
-        // Validação: Exige que ao menos um dos instrumentos tenha notas marcadas
         if (gFinal.length === 0 && kFinal.length === 0) {
             alert("Monte o acorde no Violão ou no Teclado antes de salvar!");
             return;
@@ -1159,4 +1332,53 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", configurarCadastroAcorde);
 } else {
     configurarCadastroAcorde();
+}
+
+// Função para carregar as opções de tarefas e anotações existentes nos selects do modal de aulas
+async function carregarOpcoesVinculoAulas() {
+    const selectTarefa = document.getElementById('aulaTarefaSelect');
+    const selectAnotacao = document.getElementById('aulaAnotacaoSelect');
+
+    if (selectTarefa) selectTarefa.innerHTML = '<option value="">Nenhuma tarefa vinculada</option>';
+    if (selectAnotacao) selectAnotacao.innerHTML = '<option value="">Nenhuma anotação vinculada</option>';
+
+    const alunoId = localStorage.getItem("guiaHarmonico_alunoSelecionado");
+
+    if (!alunoId) {
+        console.warn('ID do aluno não encontrado no localStorage.');
+        return;
+    }
+
+    try {
+        const { data: tarefas, error: erroTarefas } = await supabaseClient
+            .from('tarefas')
+            .select('id, titulo')
+            .eq('aluno_id', alunoId);
+
+        if (!erroTarefas && tarefas && selectTarefa) {
+            tarefas.forEach(tarefa => {
+                const option = document.createElement('option');
+                option.value = tarefa.id;
+                option.textContent = tarefa.titulo;
+                selectTarefa.appendChild(option);
+            });
+        }
+
+        const { data: anotacoes, error: erroAnotacoes } = await supabaseClient
+            .from('anotacoes')
+            .select('id, titulo')
+            .eq('aluno_id', alunoId);
+
+        if (!erroAnotacoes && anotacoes && selectAnotacao) {
+            anotacoes.forEach(anotacao => {
+                const option = document.createElement('option');
+                option.value = anotacao.id;
+                option.textContent = anotacao.titulo;
+                selectAnotacao.appendChild(option);
+            });
+        }
+
+    } catch (err) {
+        console.error('Erro ao carregar opções para o modal de aula:', err);
+    }
 }

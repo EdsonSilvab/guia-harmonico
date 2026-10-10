@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia Harmônico — Detalhes do Aluno</title>
+    <title>Guia Harmônico</title>
 
+    <link rel="stylesheet" href="assets/scrollbar.css">
+    <link rel="icon" type="image/png" href="assets/logo.png">
     <!-- Tipografia Profissional Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,15 +73,9 @@
         }
 
         .brand-logo-img {
-            height: 32px; /* Ajuste a altura ideal para a sua imagem */
-            width: auto;  /* Mantém a proporção original */
+            height: 32px;
+            width: auto;
             object-fit: contain;
-        }
-
-        .brand-logo-icon {
-            width: 24px;
-            height: 24px;
-            color: var(--brand-primary);
         }
 
         .brand-logo-text {
@@ -223,7 +219,7 @@
             color: #FFFFFF;
         }
 
-        /* PAINÉIS DE LISTAS (TAREFAS, ANOTAÇÕES, REPERTÓRIO) */
+        /* PAINÉIS DE LISTAS */
         .content-panel {
             background-color: var(--surface-card);
             border: 1px solid var(--surface-border);
@@ -252,6 +248,7 @@
         }
 
         /* ESTILO PARA OS ITENS DA LISTA GERADOS PELO JS */
+        #aulasAlunoProfessor article,
         #tarefasAlunoProfessor article,
         #anotacoesAlunoProfessor article,
         #repertorioAlunoProfessor article {
@@ -263,12 +260,14 @@
             transition: var(--transition-smooth);
         }
 
+        #aulasAlunoProfessor article:hover,
         #tarefasAlunoProfessor article:hover,
         #anotacoesAlunoProfessor article:hover,
         #repertorioAlunoProfessor article:hover {
             border-color: #374151;
         }
 
+        #aulasAlunoProfessor h3,
         #tarefasAlunoProfessor h3,
         #anotacoesAlunoProfessor h3,
         #repertorioAlunoProfessor h3 {
@@ -278,6 +277,7 @@
             margin-bottom: 0.35rem;
         }
 
+        #aulasAlunoProfessor p,
         #tarefasAlunoProfessor p,
         #anotacoesAlunoProfessor p,
         #repertorioAlunoProfessor p {
@@ -286,6 +286,7 @@
             margin-bottom: 0.35rem;
         }
 
+        #aulasAlunoProfessor small,
         #tarefasAlunoProfessor small,
         #anotacoesAlunoProfessor small,
         #repertorioAlunoProfessor small {
@@ -460,12 +461,9 @@
     <header class="app-header">
         <div class="container d-flex align-items-center justify-content-between py-2.5">
             <a class="brand-logo" href="dashboard.html">
-                    <img src="assets/logo.png" alt="Guia Harmônico" class="brand-logo-img">
-                    <span class="brand-logo-text">Guia Harmônico</span>
-                </a>
-            
-
-            
+                <img src="assets/logo.png" alt="Guia Harmônico" class="brand-logo-img">
+                <span class="brand-logo-text">Guia Harmônico</span>
+            </a>
 
             <div class="d-flex align-items-center gap-3">
                 <div class="user-pill">
@@ -473,10 +471,10 @@
                     <span id="nomeProfessor">Professor</span>
                 </div>
                 <nav>
-                <a class="btn-back-link" href="professor.html">
-                    Voltar
-                </a>
-            </nav>
+                    <a class="btn-back-link" href="professor.html">
+                        Voltar
+                    </a>
+                </nav>
                 <button id="botaoSair" class="btn-logout">
                     Sair
                 </button>
@@ -498,6 +496,9 @@
         <section class="actions-bar">
             <div class="actions-bar-title">Gerenciar Conteúdo do Aluno</div>
             <div class="d-flex flex-wrap gap-2">
+                <button id="botaoNovaAula" class="btn-action-primary">
+                    + Registrar Aula
+                </button>
                 <button id="botaoNovaTarefa" class="btn-action-primary">
                     + Nova tarefa
                 </button>
@@ -510,8 +511,22 @@
             </div>
         </section>
 
-        <!-- CONTEÚDO: TAREFAS, ANOTAÇÕES E REPERTÓRIO -->
+        <!-- CONTEÚDO: AULAS, TAREFAS, ANOTAÇÕES E REPERTÓRIO -->
         <div class="row g-4">
+
+            <!-- SEÇÃO AULAS (NOVO) -->
+            <div class="col-12">
+                <section class="content-panel">
+                    <div class="panel-title-bar">
+                        <h2 class="panel-title">Histórico de Aulas</h2>
+                    </div>
+                    <div id="aulasAlunoProfessor">
+                        <div class="loading-state">
+                            <span class="spinner-custom"></span> Carregando aulas...
+                        </div>
+                    </div>
+                </section>
+            </div>
 
             <!-- SEÇÃO TAREFAS -->
             <div class="col-12 col-lg-6">
@@ -562,6 +577,49 @@
     <!-- ========================================= -->
     <!-- MODAIS / FORMULÁRIOS DE CRIAÇÃO           -->
     <!-- ========================================= -->
+
+    <!-- MODAL: REGISTRAR AULA (NOVO) -->
+    <dialog id="modalAula">
+        <form id="formNovaAula">
+            <h3>Registrar Nova Aula</h3>
+            
+            <div class="form-group">
+                <label for="aulaTitulo">Título da Aula:*</label>
+                <input type="text" id="aulaTitulo" class="form-control-custom" required placeholder="Ex: Aula 01: Escalas Pentatônicas">
+            </div>
+
+            <div class="form-group">
+                <label for="aulaData">Data da Aula:</label>
+                <input type="date" id="aulaData" class="form-control-custom">
+            </div>
+
+            <div class="form-group">
+                <label for="aulaAnotacoes">Anotações da Aula:</label>
+                <textarea id="aulaAnotacoes" class="form-control-custom" placeholder="Resumo do que foi passado na aula..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="aulaTarefaSelect">Fixar Tarefa Existente:</label>
+                <select id="aulaTarefaSelect" class="form-control-custom">
+                    <option value="">Nenhuma tarefa vinculada</option>
+                    <!-- Preenchido dinamicamente via JS -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="aulaAnotacaoSelect">Fixar Anotação Existente:</label>
+                <select id="aulaAnotacaoSelect" class="form-control-custom">
+                    <option value="">Nenhuma anotação vinculada</option>
+                    <!-- Preenchido dinamicamente via JS -->
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel btnFecharModal">Cancelar</button>
+                <button type="submit" class="btn-action-primary">Salvar Aula</button>
+            </div>
+        </form>
+    </dialog>
 
     <!-- MODAL: NOVA TAREFA -->
     <dialog id="modalTarefa">
@@ -652,6 +710,48 @@
     <!-- ========================================= -->
     <!-- MODAIS / FORMULÁRIOS DE EDIÇÃO            -->
     <!-- ========================================= -->
+
+    <!-- MODAL: EDITAR AULA -->
+    <dialog id="modalEditarAula">
+        <form id="formEditarAula">
+            <input type="hidden" id="editAulaId">
+            <h3>Editar Aula</h3>
+            
+            <div class="form-group">
+                <label for="editAulaTitulo">Título da Aula:*</label>
+                <input type="text" id="editAulaTitulo" class="form-control-custom" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editAulaData">Data da Aula:</label>
+                <input type="date" id="editAulaData" class="form-control-custom">
+            </div>
+
+            <div class="form-group">
+                <label for="editAulaAnotacoes">Anotações da Aula:</label>
+                <textarea id="editAulaAnotacoes" class="form-control-custom"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="editAulaTarefaSelect">Fixar Tarefa Existente:</label>
+                <select id="editAulaTarefaSelect" class="form-control-custom">
+                    <option value="">Nenhuma tarefa vinculada</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="editAulaAnotacaoSelect">Fixar Anotação Existente:</label>
+                <select id="editAulaAnotacaoSelect" class="form-control-custom">
+                    <option value="">Nenhuma anotação vinculada</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel btnFecharModal">Cancelar</button>
+                <button type="submit" class="btn-action-primary">Atualizar Aula</button>
+            </div>
+        </form>
+    </dialog>
 
     <!-- MODAL: EDITAR TAREFA -->
     <dialog id="modalEditarTarefa">

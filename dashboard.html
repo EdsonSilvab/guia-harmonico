@@ -7,6 +7,7 @@
     <title>Guia Harmônico</title>
 
     <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="stylesheet" href="assets/scrollbar.css">
     <!-- Tipografia Profissional Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -349,6 +350,7 @@
 
         .instrumento-toggle {
             display: flex;
+            
             padding: 0px 5px 5px 5px;
         }
 
@@ -463,6 +465,7 @@
 
         @media (max-width: 768px) {
             .tabs-navigation .tab-button[onclick*="aba-repertorio"],
+            .tabs-navigation .tab-button[onclick*="aba-aulas"],
             .tabs-navigation .tab-button[onclick*="aba-dicionario"] {
                 display: none !important;
             }
@@ -553,8 +556,11 @@
 
         <!-- NAVEGAÇÃO DE ABAS -->
         <nav class="tabs-navigation" role="tablist">
+            <button class="tab-button" onclick="alternarAba('aba-aulas', this)" role="tab">
+                Aulas <span class="counter-badge" id="quantidadeAulas">0</span>
+            </button>
             <button class="tab-button active" onclick="alternarAba('aba-tarefas', this)" role="tab">
-                Tarefas <span class="counter-badge" id="quantidadeTarefas">0</span>
+                Atividades <span class="counter-badge" id="quantidadeTarefas">0</span>
             </button>
             <button class="tab-button" onclick="alternarAba('aba-anotacoes', this)" role="tab">
                 Anotações <span class="counter-badge" id="quantidadeAnotacoes">0</span>
@@ -566,6 +572,15 @@
                 Dicionário de Acordes
             </button>
         </nav>
+
+        <!-- ABA 0: AULAS (NOVO) -->
+        <section id="aba-aulas" class="tab-content" role="tabpanel">
+            <div id="listaAulasAluno">
+                <div class="loading-state">
+                    <span class="spinner-custom"></span> Carregando aulas...
+                </div>
+            </div>
+        </section>
 
         <!-- ABA 1: TAREFAS -->
         <section id="aba-tarefas" class="tab-content active" role="tabpanel">
@@ -630,6 +645,14 @@
 
     <!-- BARRA DE NAVEGAÇÃO INFERIOR (APENAS CELULAR) -->
     <nav class="mobile-bottom-nav">
+        <nav class="mobile-bottom-nav">
+        <!-- Ícone Aulas: Caderno / Agenda -->
+        <button type="button" class="mobile-nav-item" id="mobile-btn-aulas" onclick="alternarAbaMobile('aba-aulas', this)">
+            <svg viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
+            <span>Aulas</span>
+        </button>
         <!-- Ícone Repertório: Nota Musical -->
         <button type="button" class="mobile-nav-item" id="mobile-btn-repertorio" onclick="alternarAbaMobile('aba-repertorio', this)">
             <svg viewBox="0 0 24 24">
@@ -644,14 +667,6 @@
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/>
             </svg>
             <span>Dicionário</span>
-        </button>
-
-        <!-- Ícone Perfil: Usuário -->
-        <button type="button" class="mobile-nav-item" id="mobile-btn-perfil" onclick="rolarParaPerfilMobile(this)">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-            <span>Perfil</span>
         </button>
     </nav>
 
@@ -672,7 +687,10 @@
                 elemento.classList.add('active');
             }
 
-            if (idAba === 'aba-repertorio') {
+            if (idAba === 'aba-aulas') {
+                const btnMob = document.getElementById('mobile-btn-aulas');
+                if (btnMob) btnMob.classList.add('active');
+            } else if (idAba === 'aba-repertorio') {
                 const btnMob = document.getElementById('mobile-btn-repertorio');
                 if (btnMob) btnMob.classList.add('active');
             } else if (idAba === 'aba-dicionario') {

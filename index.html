@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guia Harmônico </title>
 
+    <link rel="stylesheet" href="assets/scrollbar.css">
     <link rel="icon" type="image/png" href="assets/logo.png">
     <!-- Fonte Inter para tipografia de produto refinada -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,8 +62,8 @@
         /* Layout em Duas Áreas Assimétricas (Painel do Produto) */
         .auth-container {
             width: 100%;
-            max-width: 880px; /* Reduzido de 960px para ficar mais compacto */
-            min-height: 540px; /* Reduzido levemente a altura mínima */
+            max-width: 880px;
+            min-height: 540px;
             margin: 1.5rem;
             background-color: var(--surface-card);
             border: 1px solid var(--surface-border);
@@ -84,7 +85,6 @@
             position: relative;
         }
 
-        /* Logo Vetorial Minimalista (3 Barras de Frequência/Escala Harmônica) */
         .brand-logo {
             display: flex;
             align-items: center;
@@ -94,15 +94,9 @@
         }
 
         .brand-logo-img {
-            height: 52px; /* Ajuste a altura ideal para a sua imagem */
-            width: auto;  /* Mantém a proporção original */
+            height: 52px;
+            width: auto;
             object-fit: contain;
-        }
-
-        .brand-logo-icon {
-            width: 28px;
-            height: 28px;
-            color: var(--brand-primary);
         }
 
         .brand-logo-text {
@@ -202,6 +196,26 @@
             box-shadow: 0 0 0 3px var(--brand-focus);
         }
 
+        /* Estilo do Botão de Mostrar Senha */
+        .btn-toggle-senha {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0;
+            margin-top: 0.4rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-toggle-senha:hover {
+            color: var(--brand-primary);
+        }
+
         /* Botão Principal */
         .btn-submit {
             width: 100%;
@@ -251,8 +265,7 @@
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
-        /* RESPONSIVIDADE (Mobile-First Optimization) */
-        /* RESPONSIVIDADE (Mobile-First Optimization) */
+        /* RESPONSIVIDADE */
         @media (max-width: 768px) {
             .auth-container {
                 grid-template-columns: 1fr;
@@ -266,7 +279,6 @@
                 border-bottom: 1px solid var(--surface-border);
             }
 
-            /* OCULTA O MANIFESTO E A VERSÃO NO TELEMÓVEL */
             .brand-manifesto,
             .brand-meta {
                 display: none !important;
@@ -286,7 +298,6 @@
         <!-- PAINEL DE MARCA & CONTEXTO -->
         <section class="brand-panel">
             <div class="brand-logo">
-                <!-- SVG Mínimo: Representação Geométrica Harmônica -->
                 <img src="assets/logo.png" alt="Guia Harmônico" class="brand-logo-img">
                 <span class="brand-logo-text">Guia Harmônico</span>
             </div>
@@ -338,6 +349,10 @@
                             aria-required="true"
                         >
                     </div>
+                    <!-- Botão de mostrar senha solicitado -->
+                    <button type="button" id="btnToggleSenha" class="btn-toggle-senha" onclick="alternarVisibilidadeSenha()">
+                        Mostrar senha
+                    </button>
                 </div>
 
                 <button type="submit" class="btn-submit" id="btnSubmit">
@@ -351,6 +366,22 @@
         </section>
 
     </main>
+
+    <!-- Script Inline para alternar a senha -->
+    <script>
+        function alternarVisibilidadeSenha() {
+            const inputSenha = document.getElementById("senha");
+            const btnToggle = document.getElementById("btnToggleSenha");
+
+            if (inputSenha.type === "password") {
+                inputSenha.type = "text";
+                btnToggle.textContent = "Ocultar senha";
+            } else {
+                inputSenha.type = "password";
+                btnToggle.textContent = "Mostrar senha";
+            }
+        }
+    </script>
 
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
