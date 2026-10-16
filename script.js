@@ -236,6 +236,27 @@ function mostrarTarefas(listaTarefas) {
     `).join('');
 }
 
+function mostrarAnotacoesConcluidas(listaConcluidas) {
+    const container = document.getElementById('listaAnotacoesConcluidas');
+    const elemBadge = document.getElementById('quantidadeAnotacoesConcluidas');
+    
+    if (elemBadge) elemBadge.textContent = listaConcluidas ? listaConcluidas.length : 0;
+    if (!container) return;
+
+    if (!listaConcluidas || listaConcluidas.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.8125rem;">Nenhuma anotação concluída ainda.</p>';
+        return;
+    }
+
+    container.innerHTML = listaConcluidas.map(a => `
+        <article class="anotacao" style="opacity: 0.75; border-left: 3px solid #10B981;">
+            <h3 style="text-decoration: line-through;">${escaparHTML(a.titulo)}</h3>
+            <p style="white-space: pre-wrap;">${escaparHTML(a.conteudo || 'Sem observações.')}</p>
+            <small>✅ Concluída</small>
+        </article>
+    `).join('');
+}
+
 function mostrarTarefasConcluidas(listaConcluidas) {
     const container = document.getElementById('listaTarefasConcluidas');
     const elemBadge = document.getElementById('quantidadeTarefasConcluidas');
@@ -255,6 +276,19 @@ function mostrarTarefasConcluidas(listaConcluidas) {
             <small>✅ Concluída</small>
         </article>
     `).join('');
+}
+
+function alternarAnotacoesConcluidas() {
+    const container = document.getElementById('containerAnotacoesConcluidas');
+    const icone = document.getElementById('iconeSanfonaAnotacao');
+
+    if (container.style.display === 'none' || container.style.display === '') {
+        container.style.display = 'block';
+        icone.textContent = '▲';
+    } else {
+        container.style.display = 'none';
+        icone.textContent = '▼';
+    }
 }
 
 function alternarTarefasConcluidas() {
@@ -350,10 +384,11 @@ async function concluirAnotacao(anotacaoId) {
         return;
     }
 
-    const { data, error } = await supabaseClient.rpc("concluir_anotacao", {
-        p_anotacao_id: anotacaoId,
-        p_aluno_id: usuario.id
-    });
+    const { error } = await supabaseClient
+        .from("anotacoes")
+        .update({ concluida: true })
+        .eq("id", anotacaoId)
+        .eq("aluno_id", usuario.id);
 
     if (error) {
         console.error("Erro ao concluir anotação:", error);
@@ -361,12 +396,15 @@ async function concluirAnotacao(anotacaoId) {
         return;
     }
 
-    const anotacoes = await buscarAnotacoesPorUsuario(usuario.id);
-    mostrarAnotacoes(anotacoes);
+    // Recarrega todo o dashboard para atualizar o contador e sumir com a anotação concluída
+    await carregarDashboard();
 }
 
 // =========================================
 // CARREGAR DASHBOARD DO ALUNO
+// =========================================
+// =========================================
+// CARREGAR DASHBOARD DO ALUNO (CORRIGIDO)
 // =========================================
 async function carregarDashboard() {
     const usuario = obterUsuarioLogado();
@@ -392,6 +430,10 @@ async function carregarDashboard() {
     const tarefasPendentes = tarefas.filter(tarefa => !tarefa.concluida);
     const tarefasConcluidas = tarefas.filter(tarefa => tarefa.concluida);
 
+    // Filtros de anotações
+    const anotacoesPendentes = anotacoes.filter(anotacao => !anotacao.concluida);
+    const anotacoesConcluidas = anotacoes.filter(anotacao => anotacao.concluida);
+
     const elemAulas = document.getElementById("quantidadeAulas");
     const elemTarefas = document.getElementById("quantidadeTarefas");
     const elemAnotacoes = document.getElementById("quantidadeAnotacoes");
@@ -399,13 +441,14 @@ async function carregarDashboard() {
 
     if (elemAulas) elemAulas.textContent = aulas.length;
     if (elemTarefas) elemTarefas.textContent = tarefasPendentes.length;
-    if (elemAnotacoes) elemAnotacoes.textContent = anotacoes.length;
+    if (elemAnotacoes) elemAnotacoes.textContent = anotacoesPendentes.length;
     if (elemRepertorio) elemRepertorio.textContent = repertorio.length;
 
     mostrarAulasAluno(aulas);
     mostrarTarefas(tarefasPendentes);
     mostrarTarefasConcluidas(tarefasConcluidas);
-    mostrarAnotacoes(anotacoes);
+    mostrarAnotacoes(anotacoesPendentes);
+    mostrarAnotacoesConcluidas(anotacoesConcluidas); // Exibe na sanfona nova
     mostrarRepertorio(repertorio);
 }
 
